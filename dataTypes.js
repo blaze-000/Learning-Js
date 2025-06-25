@@ -3,6 +3,8 @@ let age = 25
 let isStudent = true;
 let hobbies = ["reading", "gaming", "coding"];
 
+/// Primitive data type
+
 
 // number - 2 to the power of 53
 // string
@@ -12,6 +14,8 @@ let hobbies = ["reading", "gaming", "coding"];
 //symbol - unique value
 
 
-//object - collection of key value pairs
+//reference data type
+//array, functions
+//object     - collection of key value pairs
 
 console.log(typeof name);
