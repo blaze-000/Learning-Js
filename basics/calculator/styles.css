@@ -1,0 +1,140 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  background: linear-gradient(135deg, #4a5568, #2d3748);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.container {
+  background: #2c3e50;
+  border-radius: 15px;
+  padding: 25px;
+  width: 100%;
+  max-width: 350px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+  color: #ecf0f1;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+#display {
+  width: 100%;
+  height: 80px;
+  background: #34495e;
+  border: none;
+  border-radius: 10px;
+  color: #ecf0f1;
+  font-size: 1.8rem;
+  text-align: right;
+  padding: 0 20px;
+  margin-bottom: 20px;
+  outline: none;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+#display::placeholder {
+  color:white
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+button {
+  height: 60px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+ 
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.numbers {
+  background: #e8d5c4;
+  color: #2c3e50;
+}
+
+.numbers:hover {
+  background: #dcc7b3;
+}
+
+.operator {
+  background: #5a6c7d;
+  color: #ecf0f1;
+}
+
+.operator:hover {
+  background: #4a5a6b;
+}
+
+.reset {
+  background: #5a6c7d;
+  color: #ecf0f1;
+  grid-column: span 2;
+}
+
+.reset:hover {
+  background: #4a5a6b;
+}
+
+.equals {
+  background: #c0392b;
+  color: #ecf0f1;
+  grid-column: span 2;
+}
+
+.equals:hover {
+  background: #a93226;
+}
+
+/* Special styling for DEL button */
+.operator:first-of-type {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Responsive design */
+@media (max-width: 400px) {
+  .container {
+    padding: 20px;
+    margin: 10px;
+  }
+
+  button {
+    height: 50px;
+    font-size: 1rem;
+  }
+
+  #display {
+    height: 60px;
+    font-size: 1.5rem;
+  }
+}
