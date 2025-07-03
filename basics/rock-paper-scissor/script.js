@@ -2,88 +2,97 @@ const choices = ["rock", "paper", "scissor"];
 let humanScore = 0;
 let computerScore = 0;
 
+const container = document.querySelector(".container");
+const btn = document.querySelector("button");
+
 function getComputerChoice() {
   const number = Math.floor(Math.random() * choices.length);
   return choices[number];
 }
 
 function getHumanChoice() {
-  return prompt("Enter your choice").trim().toLowerCase();
+  return prompt("Enter your choice: rock, paper, or scissor")
+    .trim()
+    .toLowerCase();
 }
 
 function playRound(humanChoice, computerChoice) {
+  let result = "";
+
   switch (computerChoice) {
     case "rock":
       switch (humanChoice) {
         case "rock":
-          console.log("Both are rock. Tied");
+          result = "Both chose rock. Tied";
           break;
         case "paper":
-          console.log("Paper beats Rock. You win");
-          humanScore += 1;
+          result = "Paper beats Rock. You win";
+          humanScore++;
           break;
         case "scissor":
-          console.log("rock beats Scissor. You loose");
-          computerScore += 1;
+          result = "Rock beats Scissor. You lose";
+          computerScore++;
           break;
         default:
-          console.log("Invalid Choices");
+          result = "Invalid choice";
       }
       break;
 
     case "paper":
       switch (humanChoice) {
         case "paper":
-          console.log("Both are paper. Tied");
+          result = "Both chose paper. Tied";
           break;
         case "rock":
-          console.log("Paper beats Rock. You loose");
-          computerScore += 1;
+          result = "Paper beats Rock. You lose";
+          computerScore++;
           break;
         case "scissor":
-          console.log("Scissor beats paper. You win");
-          humanScore += 1;
+          result = "Scissor beats Paper. You win";
+          humanScore++;
           break;
         default:
-          console.log("Invalid Choices");
+          result = "Invalid choice";
       }
       break;
 
     case "scissor":
       switch (humanChoice) {
         case "scissor":
-          console.log("Both are scissor. Tied");
+          result = "Both chose scissor. Tied";
           break;
         case "paper":
-          console.log("Scissor beats paper. You Loose");
-          computerScore += 1;
+          result = "Scissor beats Paper. You lose";
+          computerScore++;
           break;
         case "rock":
-          console.log("rock beats Scissor. You win");
-          humanScore += 1;
+          result = "Rock beats Scissor. You win";
+          humanScore++;
           break;
         default:
-          console.log("Invalid Choices");
+          result = "Invalid choice";
       }
       break;
   }
+
+  container.textContent = `${result} | Score: You - ${humanScore}, Computer - ${computerScore}`;
 }
 
-function playGame() {
-  for (let i = 0; i < 5; i++) {
-    const humanChoice = getHumanChoice();
-    const computerChoice = getComputerChoice();
-    playRound(humanChoice, computerChoice);
-    console.log(`Score: You - ${humanScore}, computer - ${computerScore}`);
-  }
+btn.addEventListener("click", () => {
+  const humanChoice = getHumanChoice();
+  const computerChoice = getComputerChoice();
+  playRound(humanChoice, computerChoice);
 
-  if (humanScore > computerScore) {
-    console.log("You win the Game");
-  } else if (computerScore > humanScore) {
-    console.log("you loose the game");
-  } else {
-    console.log("tied");
-  }
-}
+  if (humanScore + computerScore >= 5) {
+    if (humanScore > computerScore) {
+      container.textContent += "\n🏆 You win the Game!";
+    } else if (computerScore > humanScore) {
+      container.textContent += "\n💻 Computer wins the Game!";
+    } else {
+      container.textContent += "\n🤝 The game is tied!";
+    }
 
-playGame();
+    // Optionally disable the button after 5 rounds
+    btn.disabled = true;
+  }
+});
