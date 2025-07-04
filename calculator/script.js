@@ -33,4 +33,3 @@ function calculateResult(){
             displayBox.value = 'Error';
       }
 }
-

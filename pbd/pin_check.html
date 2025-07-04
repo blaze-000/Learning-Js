@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ATM PIN Verification</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Courier New", monospace;
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .atm-container {
+        background: #2c3e50;
+        border-radius: 15px;
+        padding: 30px 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border: 3px solid #34495e;
+        max-width: 330px;
+        width: 100%;
+      }
+
+      .atm-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .bank-logo {
+        color: #3498db;
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+      }
+
+      .atm-title {
+        color: #ecf0f1;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+      }
+
+      .screen {
+        background: #1a252f;
+        border: 2px solid #34495e;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.3);
+      }
+
+      .instruction {
+        color: #3498db;
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 1rem;
+      }
+
+      .pin-display {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .pin-digit {
+        width: 40px;
+        height: 40px;
+        background: #34495e;
+        border: 2px solid #3498db;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3498db;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .pin-digit.filled {
+        background: #3498db;
+        color: #2c3e50;
+      }
+
+      .status-message {
+        color: #e74c3c;
+        text-align: center;
+        font-size: 0.9rem;
+        min-height: 20px;
+      }
+
+      .status-message.success {
+        color: #27ae60;
+      }
+
+      .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .key {
+        height: 50px;
+        background: #34495e;
+        border: 2px solid #3498db;
+        border-radius: 8px;
+        color: #ecf0f1;
+        font-size: 1.4rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: "Courier New", monospace;
+      }
+
+      .key:hover {
+        background: #3498db;
+        color: #2c3e50;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+      }
+
+      .key:active {
+        transform: translateY(0);
+      }
+
+      .action-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .action-btn {
+        height: 50px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: "Courier New", monospace;
+      }
+
+      .clear-btn {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .clear-btn:hover {
+        background: #c0392b;
+        transform: translateY(-2px);
+      }
+
+      .enter-btn {
+        background: #27ae60;
+        color: white;
+      }
+
+      .enter-btn:hover {
+        background: #229954;
+        transform: translateY(-2px);
+      }
+
+      .footer {
+        text-align: center;
+        color: #7f8c8d;
+        font-size: 0.8rem;
+        margin-top: 20px;
+      }
+
+      /* Security indicator */
+      .security-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        margin-bottom: 15px;
+      }
+
+      .security-dot {
+        width: 8px;
+        height: 8px;
+        background: #27ae60;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* Responsive design */
+      @media (max-width: 480px) {
+        .atm-container {
+          padding: 30px 20px;
+        }
+
+        .key {
+          height: 50px;
+          font-size: 1.2rem;
+        }
+
+        .pin-digit {
+          width: 35px;
+          height: 35px;
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="atm-container">
+      <div class="atm-header">
+        <div class="bank-logo">SECURE BANK</div>
+        <div class="atm-title">ATM PIN VERIFICATION</div>
+      </div>
+
+      <div class="screen">
+        <div class="security-indicator">
+          <div class="security-dot"></div>
+          <span style="color: #27ae60; font-size: 0.8rem"
+            >SECURE CONNECTION</span
+          >
+        </div>
+
+        <div class="instruction">Enter your 4-digit PIN</div>
+
+        <div class="pin-display">
+          <div class="pin-digit" id="digit1"></div>
+          <div class="pin-digit" id="digit2"></div>
+          <div class="pin-digit" id="digit3"></div>
+          <div class="pin-digit" id="digit4"></div>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+      </div>
+
+      <div class="keypad">
+        <button class="key" data-number="1">1</button>
+        <button class="key" data-number="2">2</button>
+        <button class="key" data-number="3">3</button>
+        <button class="key" data-number="4">4</button>
+        <button class="key" data-number="5">5</button>
+        <button class="key" data-number="6">6</button>
+        <button class="key" data-number="7">7</button>
+        <button class="key" data-number="8">8</button>
+        <button class="key" data-number="9">9</button>
+        <button class="key zero" data-number="0">0</button>
+      </div>
+
+      <div class="action-buttons">
+        <button class="action-btn clear-btn" id="clearBtn">CLEAR</button>
+        <button class="action-btn enter-btn" id="enterBtn">ENTER</button>
+      </div>
+
+      <div class="footer">Please keep your PIN confidential</div>
+    </div>
+
+    <script>
+      // PIN validation system
+      let enteredPin = "";
+      const correctPin = "1234"; // You can change this to any 4-digit PIN
+      const maxPinLength = 4;
+
+      // Get DOM elements
+      const digits = [
+        document.getElementById("digit1"),
+        document.getElementById("digit2"),
+        document.getElementById("digit3"),
+        document.getElementById("digit4"),
+      ];
+
+
+      const statusMessage = document.getElementById("statusMessage");
+      const clearBtn = document.getElementById("clearBtn");
+      const enterBtn = document.getElementById("enterBtn");
+      const numberKeys = document.querySelectorAll(".key[data-number]");
+
+      // Add event listeners to number keys
+      numberKeys.forEach((key) => {
+        key.addEventListener("click", () => {
+          const number = key.getAttribute("data-number");
+          addDigit(number);
+        });
+      });
+
+      // Add event listeners to action buttons
+      clearBtn.addEventListener("click", clearPin);
+      enterBtn.addEventListener("click", validatePin);
+
+      // Add keyboard support
+      document.addEventListener("keydown", (event) => {
+        const key = event.key;
+
+        if (key >= "0" && key <= "9") {
+          addDigit(key);
+        } else if (key === "Enter") {
+          validatePin();
+        } else if (key === "Escape" || key === "Backspace") {
+          clearPin();
+        }
+      });
+
+      // Function to add a digit to the PIN
+      function addDigit(digit) {
+        if (enteredPin.length < maxPinLength) {
+          enteredPin += digit;
+          updateDisplay();
+          clearStatus();
+        }
+      }
+
+      // Function to update the visual display
+      function updateDisplay() {
+        digits.forEach((digitElement, index) => {
+          if (index < enteredPin.length) {
+            digitElement.textContent = "*"; // Show asterisk for security
+            digitElement.classList.add("filled");
+          } else {
+            digitElement.textContent = "";
+            digitElement.classList.remove("filled");
+          }
+        });
+      }
+
+      // Function to clear the PIN
+      function clearPin() {
+        enteredPin = "";
+        updateDisplay();
+        clearStatus();
+      }
+
+      // Function to validate the PIN
+      function validatePin() {
+        if (enteredPin.length !== maxPinLength) {
+          showStatus("Please enter a 4-digit PIN", "error");
+          return;
+        }
+
+        if (enteredPin === correctPin) {
+          showStatus("✓ PIN Correct! Access Granted", "success");
+          // Animate success
+          digits.forEach((digit) => {
+            digit.style.background = "#27ae60";
+            digit.style.borderColor = "#27ae60";
+          });
+
+          // Reset after 3 seconds
+          setTimeout(() => {
+            clearPin();
+            resetDigitStyles();
+          }, 3000);
+        } else {
+          showStatus("Incorrect PIN. Please try again", "error");
+          // Animate error
+          digits.forEach((digit) => {
+            digit.style.background = "#e74c3c";
+            digit.style.borderColor = "#e74c3c";
+          });
+
+          // Reset after 2 seconds
+          setTimeout(() => {
+            clearPin();
+            resetDigitStyles();
+          }, 2000);
+        }
+      }
+
+      // Function to show status message
+      function showStatus(message, type) {
+        statusMessage.textContent = message;
+        statusMessage.className = `status-message ${type}`;
+      }
+
+      // Function to clear status message
+      function clearStatus() {
+        statusMessage.textContent = "";
+        statusMessage.className = "status-message";
+      }
+
+      // Function to reset digit styles
+      function resetDigitStyles() {
+        digits.forEach((digit) => {
+          digit.style.background = "#34495e";
+          digit.style.borderColor = "#3498db";
+        });
+      }
+
+      // Add visual feedback for button presses
+      numberKeys.forEach((key) => {
+        key.addEventListener("mousedown", () => {
+          key.style.transform = "translateY(2px)";
+        });
+
+        key.addEventListener("mouseup", () => {
+          key.style.transform = "translateY(-2px)";
+        });
+
+        key.addEventListener("mouseleave", () => {
+          key.style.transform = "translateY(0)";
+        });
+      });
+
+      // Add visual feedback for action buttons
+      [clearBtn, enterBtn].forEach((btn) => {
+        btn.addEventListener("mousedown", () => {
+          btn.style.transform = "translateY(2px)";
+        });
+
+        btn.addEventListener("mouseup", () => {
+          btn.style.transform = "translateY(-2px)";
+        });
+
+        btn.addEventListener("mouseleave", () => {
+          btn.style.transform = "translateY(0)";
+        });
+      });
+
+      // Initialize display
+      updateDisplay();
+    </script>
+  </body>
+</html>
