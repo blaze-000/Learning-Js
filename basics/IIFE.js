@@ -1,11 +1,11 @@
-// Immediately Invoked Function Expression (IIFE)
+// // Immediately Invoked Function Expression (IIFE)
 
-(function asmit(){
-      console.log('Hello');     
-})();
+// (function asmit(){
+//       console.log('Hello');     
+// })();
 
 
-//syntax
+// //syntax
 // () ()   works in arrow function too
 
 ( (name) => {
