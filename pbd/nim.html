@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nim Game - Strategic Number Game</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .game-title {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .game-subtitle {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        font-weight: 400;
+      }
+
+      .start {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 18px 35px;
+        font-size: 1.3rem;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+      }
+
+      .start:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(52, 152, 219, 0.4);
+        background: linear-gradient(135deg, #2980b9, #3498db);
+      }
+
+      .player {
+        display: none;
+        flex-direction: column;
+        gap: 25px;
+        margin-top: 30px;
+        width: 100%;
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+      }
+
+      .player label {
+        color: #2c3e50;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .player-icon {
+        width: 24px;
+        height: 24px;
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      .player-icon.player2 {
+        background: linear-gradient(135deg, #27ae60, #229954);
+      }
+
+      .player input {
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 10px;
+        background-color: white;
+        color: #2c3e50;
+        outline: none;
+        transition: all 0.3s ease;
+        font-family: inherit;
+      }
+
+      .player input:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .submitBtn {
+        background: linear-gradient(135deg, #27ae60, #229954);
+        color: white;
+        border: none;
+        padding: 18px 35px;
+        font-size: 1.2rem;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+        margin-top: 10px;
+      }
+
+      .submitBtn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(39, 174, 96, 0.4);
+      }
+
+      .gameboard {
+        display: none;
+        animation: slideIn 0.6s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .game-header {
+        margin-bottom: 30px;
+      }
+
+      .turn-display {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 12px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 15px rgba(243, 156, 18, 0.3);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+      }
+
+      .game-instructions {
+        background: #ecf0f1;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        color: #2c3e50;
+        border-left: 5px solid #3498db;
+      }
+
+      .game-instructions h4 {
+        color: #2980b9;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+      }
+
+      .item-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+      }
+
+      .item-box {
+        background: linear-gradient(135deg, #8e44ad, #9b59b6);
+        color: white;
+        border: none;
+        padding: 25px;
+        font-size: 1.1rem;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 120px;
+        box-shadow: 0 8px 20px rgba(142, 68, 173, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .item-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(142, 68, 173, 0.4);
+      }
+
+      .item-box.empty {
+        background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .item-box.empty:hover {
+        transform: none;
+        box-shadow: 0 8px 20px rgba(149, 165, 166, 0.3);
+      }
+
+      .pile-label {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: block;
+      }
+
+      .pile-count {
+        font-size: 2rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .stones-visual {
+        display: flex;
+        justify-content: center;
+        gap: 3px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+      }
+
+      .stone {
+        width: 8px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+      }
+
+      ul {
+        list-style-type: none;
+      }
+
+      /* FIXED POPUP STYLES */
+      .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        backdrop-filter: blur(5px);
+        padding: 20px;
+      }
+
+      .popup-content {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        max-width: 400px;
+        min-width: 300px;
+        animation: popIn 0.3s ease-out;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      @keyframes popIn {
+        from {
+          opacity: 0;
+          transform: scale(0.8) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .popup-title {
+        color: #2c3e50;
+        font-size: 1.4rem;
+        font-weight: 600;
+        text-align: center;
+        margin: 0;
+      }
+
+      .pile-info {
+        background: #ecf0f1;
+        padding: 15px;
+        border-radius: 10px;
+        width: 100%;
+        text-align: center;
+        color: #2c3e50;
+        margin: 0;
+      }
+
+      .pile-info p {
+        margin: 5px 0;
+        font-size: 1rem;
+      }
+
+      .popup-content input {
+        padding: 15px 20px;
+        font-size: 1.2rem;
+        border: 2px solid #ecf0f1;
+        border-radius: 12px;
+        background: white;
+        color: #2c3e50;
+        width: 100%;
+        outline: none;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-family: inherit;
+        box-sizing: border-box;
+      }
+
+      .popup-content input:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
+      }
+
+      .popup-buttons {
+        display: flex;
+        gap: 15px;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .removeBtn,
+      .cancelBtn {
+        flex: 1;
+        padding: 15px 20px;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        min-width: 120px;
+      }
+
+      .removeBtn {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+      }
+
+      .removeBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+      }
+
+      .cancelBtn {
+        background: #95a5a6;
+        color: white;
+      }
+
+      .cancelBtn:hover {
+        background: #7f8c8d;
+        transform: translateY(-2px);
+      }
+
+      .game-over {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-top: 30px;
+        text-align: center;
+        animation: bounceIn 0.6s ease-out;
+      }
+
+      @keyframes bounceIn {
+        0% {
+          transform: scale(0.3);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        70% {
+          transform: scale(0.9);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .restart-btn {
+        background: white;
+        color: #e74c3c;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+      }
+
+      .restart-btn:hover {
+        background: #ecf0f1;
+        transform: translateY(-2px);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        #container {
+          padding: 25px;
+          margin: 10px;
+        }
+
+        .game-title {
+          font-size: 2rem;
+        }
+
+        .item-container {
+          gap: 15px;
+        }
+
+        .item-box {
+          min-width: 100px;
+          padding: 20px;
+        }
+
+        .popup-content {
+          margin: 15px;
+          padding: 25px;
+          min-width: 280px;
+        }
+
+        .popup-buttons {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .removeBtn,
+        .cancelBtn {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .item-container {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .popup {
+          padding: 15px;
+        }
+
+        .popup-content {
+          min-width: 250px;
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <!-- Welcome Screen -->
+      <div class="welcome-screen">
+        <h1 class="game-title">🎯 NIM GAME</h1>
+        <p class="game-subtitle">Strategic Mathematical Game for Two Players</p>
+        <button class="start">🚀 Start New Game</button>
+      </div>
+
+      <!-- Player Registration -->
+      <div class="player">
+        <h2 style="color: #2c3e50; margin-bottom: 20px; text-align: center">
+          👥 Player Registration
+        </h2>
+        <div class="input-group">
+          <label>
+            <span class="player-icon">1</span>
+            Player 1 Name:
+          </label>
+          <input
+            type="text"
+            name="player1"
+            placeholder="Enter Player 1 name"
+            maxlength="15"
+          />
+        </div>
+        <div class="input-group">
+          <label>
+            <span class="player-icon player2">2</span>
+            Player 2 Name:
+          </label>
+          <input
+            type="text"
+            name="player2"
+            placeholder="Enter Player 2 name"
+            maxlength="15"
+          />
+        </div>
+        <button class="submitBtn">🎮 Start Playing</button>
+      </div>
+
+      <!-- Game Board -->
+      <div class="gameboard">
+        <div class="game-header">
+          <div class="turn-display" id="turnDisplay">Player 1's Turn</div>
+          <div class="game-instructions">
+            <h4>📋 Game Rules:</h4>
+            <p>• Click on a pile to remove stones from it</p>
+            <p>• You can remove 1 or more stones from a single pile</p>
+            <p>• The player who takes the last stone loses!</p>
+            <p>• Plan your moves carefully and think ahead!</p>
+          </div>
+        </div>
+
+        <div class="item-container">
+          <button class="item-box" data-id="A">
+            <div class="pile-label">Pile A</div>
+            <div class="pile-count">3</div>
+            <div class="stones-visual"></div>
+          </button>
+          <button class="item-box" data-id="B">
+            <div class="pile-label">Pile B</div>
+            <div class="pile-count">5</div>
+            <div class="stones-visual"></div>
+          </button>
+          <button class="item-box" data-id="C">
+            <div class="pile-label">Pile C</div>
+            <div class="pile-count">7</div>
+            <div class="stones-visual"></div>
+          </button>
+        </div>
+
+        <div class="game-stats" style="text-align: center; margin-top: 20px">
+          <p style="color: #7f8c8d; font-size: 1rem">
+            Total Stones Remaining: <span id="totalStones">15</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Enhanced Popup -->
+      <div id="popup" class="popup">
+        <div class="popup-content">
+          <h3 class="popup-title">🎯 Remove Stones</h3>
+          <div class="pile-info">
+            <p>From <strong id="selectedPile">Pile A</strong></p>
+            <p>Current stones: <strong id="currentStones">0</strong></p>
+          </div>
+          <input
+            type="number"
+            min="1"
+            placeholder="How many stones to remove?"
+            id="removeInput"
+          />
+          <div class="popup-buttons">
+            <button class="cancelBtn">❌ Cancel</button>
+            <button class="removeBtn">✅ Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Over Screen -->
+      <div id="gameOver" class="game-over" style="display: none">
+        <h2>🎊 Game Over!</h2>
+        <p id="winnerMessage"></p>
+        <button class="restart-btn" onclick="location.reload()">
+          🔄 Play Again
+        </button>
+      </div>
+    </div>
+  </body>
+  <script>
+    // Enhanced Nim Game Logic
+    class NimGame {
+      constructor() {
+        this.boxData = { A: 3, B: 5, C: 7 };
+        this.currentPlayer = 1;
+        this.playerNames = ["", ""];
+        this.gameHistory = [];
+        this.currentBoxId = null;
+        this.isGameOver = false;
+        this.initializeElements();
+        this.attachEventListeners();
+        this.updateDisplay();
+      }
+
+      initializeElements() {
+        // Get all DOM elements
+        this.startBtn = document.querySelector(".start");
+        this.playerSection = document.querySelector(".player");
+        this.submitBtn = document.querySelector(".submitBtn");
+        this.itemBoxes = document.querySelectorAll(".item-box[data-id]");
+        this.popup = document.querySelector(".popup");
+        this.removeBtn = document.querySelector(".removeBtn");
+        this.cancelBtn = document.querySelector(".cancelBtn");
+        this.inputField = document.getElementById("removeInput");
+        this.gameboard = document.querySelector(".gameboard");
+        this.playerInputs = document.querySelectorAll(".player input");
+        this.turnDisplay = document.getElementById("turnDisplay");
+        this.gameOver = document.getElementById("gameOver");
+        this.selectedPile = document.getElementById("selectedPile");
+        this.currentStones = document.getElementById("currentStones");
+        this.totalStones = document.getElementById("totalStones");
+        this.winnerMessage = document.getElementById("winnerMessage");
+      }
+
+      attachEventListeners() {
+        // Start button
+        this.startBtn.addEventListener("click", () =>
+          this.showPlayerRegistration()
+        );
+
+        // Submit button for player names
+        this.submitBtn.addEventListener("click", () => this.startGame());
+
+        // Item boxes (piles)
+        this.itemBoxes.forEach((box) => {
+          box.addEventListener("click", () => this.selectPile(box));
+        });
+
+        // Popup buttons
+        this.removeBtn.addEventListener("click", () => this.removeStones());
+        this.cancelBtn.addEventListener("click", () => this.closePopup());
+
+        // Input field validation
+        this.inputField.addEventListener("input", () => this.validateInput());
+        this.inputField.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") this.removeStones();
+          if (e.key === "Escape") this.closePopup();
+        });
+
+        // Player input validation
+        this.playerInputs.forEach((input) => {
+          input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") this.startGame();
+          });
+        });
+
+        // Close popup when clicking outside
+        this.popup.addEventListener("click", (e) => {
+          if (e.target === this.popup) this.closePopup();
+        });
+
+        // Prevent body scroll when popup is open
+        this.popup.addEventListener("wheel", (e) => {
+          e.preventDefault();
+        });
+      }
+
+      showPlayerRegistration() {
+        this.startBtn.style.display = "none";
+        this.playerSection.style.display = "flex";
+        this.playerInputs[0].focus();
+      }
+
+      startGame() {
+        const player1Name = this.playerInputs[0].value.trim();
+        const player2Name = this.playerInputs[1].value.trim();
+
+        if (!player1Name || !player2Name) {
+          this.showAlert("Please enter names for both players!", "warning");
+          return;
+        }
+
+        if (player1Name === player2Name) {
+          this.showAlert("Players must have different names!", "warning");
+          return;
+        }
+
+        this.playerNames[0] = player1Name;
+        this.playerNames[1] = player2Name;
+
+        this.playerSection.style.display = "none";
+        this.gameboard.style.display = "block";
+        this.updateTurnDisplay();
+        this.updateDisplay();
+      }
+
+      selectPile(box) {
+        if (this.isGameOver) return;
+
+        const id = box.getAttribute("data-id");
+        this.currentBoxId = id;
+
+        if (this.boxData[id] === 0) {
+          this.showAlert(
+            "This pile is empty! Choose a different pile.",
+            "info"
+          );
+          return;
+        }
+
+        this.selectedPile.textContent = `Pile ${id}`;
+        this.currentStones.textContent = this.boxData[id];
+        this.inputField.max = this.boxData[id];
+        this.inputField.value = "";
+        this.popup.style.display = "flex";
+        
+        // Ensure input is focused after popup animation
+        setTimeout(() => {
+          this.inputField.focus();
+        }, 100);
+      }
+
+      validateInput() {
+        const value = parseInt(this.inputField.value);
+        const maxStones = this.boxData[this.currentBoxId];
+
+        if (value > maxStones) {
+          this.inputField.value = maxStones;
+        }
+        if (value < 1) {
+          this.inputField.value = "";
+        }
+      }
+
+      removeStones() {
+        const valueToRemove = parseInt(this.inputField.value);
+        const maxStones = this.boxData[this.currentBoxId];
+
+        if (!valueToRemove || isNaN(valueToRemove) || valueToRemove < 1) {
+          this.showAlert(
+            "Please enter a valid number of stones to remove!",
+            "warning"
+          );
+          return;
+        }
+
+        if (valueToRemove > maxStones) {
+          this.showAlert(
+            `You can only remove up to ${maxStones} stones from this pile!`,
+            "warning"
+          );
+          return;
+        }
+
+        // Record the move
+        this.gameHistory.push({
+          player: this.currentPlayer,
+          pile: this.currentBoxId,
+          removed: valueToRemove,
+          before: this.boxData[this.currentBoxId],
+        });
+
+        // Update pile
+        this.boxData[this.currentBoxId] -= valueToRemove;
+        this.updateDisplay();
+        this.closePopup();
+
+        // Check win condition
+        if (this.checkWinCondition()) {
+          this.endGame();
+          return;
+        }
+
+        // Switch turns
+        this.switchPlayer();
+        this.updateTurnDisplay();
+      }
+
+      closePopup() {
+        this.popup.style.display = "none";
+        this.inputField.value = "";
+        this.currentBoxId = null;
+      }
+
+      switchPlayer() {
+        this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+      }
+
+      checkWinCondition() {
+        return Object.values(this.boxData).every((val) => val === 0);
+      }
+
+      endGame() {
+        this.isGameOver = true;
+        const loserName = this.playerNames[this.currentPlayer - 1];
+        const winnerName = this.playerNames[this.currentPlayer === 1 ? 1 : 0];
+
+        this.winnerMessage.innerHTML = `
+          <p style="font-size: 1.5rem; margin-bottom: 15px;">
+            🏆 <strong>${winnerName}</strong> wins!
+          </p>
+          <p style="font-size: 1.1rem; opacity: 0.9;">
+            ${loserName} took the last stone and loses the game.
+          </p>
+          <p style="font-size: 0.9rem; margin-top: 15px; opacity: 0.8;">
+            Game completed in ${this.gameHistory.length} moves.
+          </p>
+        `;
+
+        this.gameOver.style.display = "block";
+        this.confetti();
+      }
+
+      updateDisplay() {
+        let totalStones = 0;
+
+        this.itemBoxes.forEach((box) => {
+          const id = box.getAttribute("data-id");
+          const count = this.boxData[id];
+          totalStones += count;
+
+          // Update pile count
+          box.querySelector(".pile-count").textContent = count;
+
+          // Update visual stones
+          const stonesVisual = box.querySelector(".stones-visual");
+          stonesVisual.innerHTML = "";
+
+          // Add visual stones (max 10 for display)
+          const displayStones = Math.min(count, 10);
+          for (let i = 0; i < displayStones; i++) {
+            const stone = document.createElement("div");
+            stone.className = "stone";
+            stonesVisual.appendChild(stone);
+          }
+
+          // Add "..." if more than 10 stones
+          if (count > 10) {
+            const moreIndicator = document.createElement("span");
+            moreIndicator.textContent = "...";
+            moreIndicator.style.color = "rgba(255, 255, 255, 0.8)";
+            moreIndicator.style.fontSize = "0.8rem";
+            stonesVisual.appendChild(moreIndicator);
+          }
+
+          // Update pile appearance
+          if (count === 0) {
+            box.classList.add("empty");
+            box.style.cursor = "not-allowed";
+          } else {
+            box.classList.remove("empty");
+            box.style.cursor = "pointer";
+          }
+        });
+
+        this.totalStones.textContent = totalStones;
+      }
+
+      updateTurnDisplay() {
+        const playerName = this.playerNames[this.currentPlayer - 1];
+        const playerIcon = this.currentPlayer === 1 ? "🔴" : "🟢";
+        this.turnDisplay.innerHTML = `${playerIcon} <strong>${playerName}</strong>'s Turn`;
+
+        // Add turn animation
+        this.turnDisplay.style.transform = "scale(1.05)";
+        setTimeout(() => {
+          this.turnDisplay.style.transform = "scale(1)";
+        }, 200);
+      }
+
+      showAlert(message, type = "info") {
+        // Create custom alert
+        const alertDiv = document.createElement("div");
+        alertDiv.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: ${
+            type === "warning"
+              ? "#f39c12"
+              : type === "info"
+              ? "#3498db"
+              : "#27ae60"
+          };
+          color: white;
+          padding: 15px 20px;
+          border-radius: 10px;
+          box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+          z-index: 10001;
+          font-weight: 600;
+          max-width: 300px;
+          animation: slideInRight 0.3s ease-out;
+        `;
+        alertDiv.textContent = message;
+
+        // Add keyframes
+        if (!document.querySelector("#alertKeyframes")) {
+          const style = document.createElement("style");
+          style.id = "alertKeyframes";
+          style.textContent = `
+            @keyframes slideInRight {
+              from { transform: translateX(100%); opacity: 0; }
+              to { transform: translateX(0); opacity: 1; }
+            }
+          `;
+          document.head.appendChild(style);
+        }
+
+        document.body.appendChild(alertDiv);
+
+        setTimeout(() => {
+          alertDiv.style.animation = "slideInRight 0.3s ease-out reverse";
+          setTimeout(() => alertDiv.remove(), 300);
+        }, 3000);
+      }
+
+      confetti() {
+        // Simple confetti effect
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement("div");
+            confetti.style.cssText = `
+              position: fixed;
+              top: -10px;
+              left: ${Math.random() * 100}%;
+              width: 10px;
+              height: 10px;
+              background: ${
+                ["#e74c3c", "#f39c12", "#27ae60", "#3498db", "#9b59b6"][
+                  Math.floor(Math.random() * 5)
+                ]
+              };
+              border-radius: 50%;
+              pointer-events: none;
+              z-index: 10000;
+              animation: confettiFall 3s linear forwards;
+            `;
+
+            if (!document.querySelector("#confettiKeyframes")) {
+              const style = document.createElement("style");
+              style.id = "confettiKeyframes";
+              style.textContent = `
+                @keyframes confettiFall {
+                  to { 
+                    transform: translateY(100vh) rotate(720deg);
+                    opacity: 0;
+                  }
+                }
+              `;
+              document.head.appendChild(style);
+            }
+
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+          }, i * 100);
+        }
+      }
+    }
+
+    // Initialize game when page loads
+    document.addEventListener("DOMContentLoaded", () => {
+      new NimGame();
+    });
+  </script>
+</html>
