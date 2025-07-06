@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <h1>Blaze - Not Found!</h1>
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
+  </body>
+  <script>
+    const body = document.querySelector("body");
+    let startInterval;
+    //     // timeout is 1 time run after fixed time, interval is loop after every fixed time
+    //     setTimeout(() => {
+    //       console.log("Asmit Sah");
+    //     }, 2000);
+
+    //     clearTimeout(); //add to eventlistener, for example when button clicked - it stop the timeout
+
+//     const randomColor =
+//           "#" +
+//           Math.floor(Math.random() * 0xffffff)
+//             .toString(16)
+//             .padStart(6, "0");
+
+    const randomColor = () => {
+                  const hex = "0123456789ABCDEF"
+                  let color = '#'
+                  for(let i =0; i < 6; i ++){
+                        color += hex[parseInt(Math.random() * 16)]
+                  }
+                   return color;
+            }
+
+    document.querySelector("#start").addEventListener("click", () => {
+      startInterval = setInterval(() => {
+        body.style.backgroundColor = randomColor();
+      }, 1000);
+    });
+
+    document.querySelector("#stop").addEventListener("click", () => {
+      clearInterval(startInterval);
+    
+    });
+  </script>
+</html>
